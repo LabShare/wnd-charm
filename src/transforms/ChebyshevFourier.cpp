@@ -81,6 +81,7 @@ void ChebyshevFourier2D(const ImageMatrix &Im, unsigned long N, double *coeff_pa
 		x_ind = -1.0 + (double)x * two_over_n_minus_1;
 		x_2 = pow (x_ind, 2);
 		for (y = 0; y < m; y++) {
+		    if(std::isnan(Im_pix_plane(y,x))) continue; //MM
 			img[ind]=Im_pix_plane(y,x);
 
 			// convert cartesian to polar

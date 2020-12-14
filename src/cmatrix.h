@@ -175,6 +175,8 @@ private:
 
 public:
 
+    bool BoundingBoxFlag; //MM
+
 	// N.B.: Re: ctor, see note in implementation
 	ImageMatrix () : _pix_plane (NULL,0,0), _clr_plane (NULL,0,0), downsampled(0),
         norm_mean(0), norm_stdev(0) { init(); };
@@ -191,6 +193,9 @@ public:
 
 	// width and height of the picture
 	unsigned int width, height;
+
+   //ROI Bounding Box Dimensions
+  //  unsigned int ROIHeightBeg, ROIHeightEnd, ROIWidthBeg, ROIWidthEnd, ROIHeight, ROIWidth;  //MM
 
 	// N percents, if user specified for pixel plane to be downsampled on open
 	unsigned short downsampled;
@@ -241,14 +246,15 @@ public:
 		_is_clr_writeable = false;
 	}
 	// load from TIFF file
-	int LoadTIFF(char *filename);
+	//MM int LoadTIFF(char *filename);
+    int LoadTIFF(char *filename,double ** LabeledImageMatrix, int ClassID);
 
 	// FIXME: Currently saves this->_pix_plane to grayscale TIF, color info not included!
 	int SaveTiff(char *filename);
 
 	// load an image of any supported format
-	virtual int OpenImage( char *image_file_name, int downsample=0, rect *bounding_rect=NULL,
-		double mean=0, double stdev=0);
+	//MM virtual int OpenImage( char *image_file_name, int downsample=0, rect *bounding_rect=NULL, double mean=0, double stdev=0);
+	virtual int OpenImage( char *image_file_name, double ** LabeledImageMatrix=NULL, int ClassID=0, int downsample=0, rect *bounding_rect=NULL, double mean=0, double stdev=0);
 
 	// constructor helpers
 	void init();
@@ -307,7 +313,8 @@ public:
 	void MultiScaleHistogram(double *out) const;
 	//   double AverageEdge();
 	void EdgeTransform(const ImageMatrix &matrix_IN);                           // gradient binarized using otsu threshold
-	double fft2 (const ImageMatrix &matrix_IN);
+	//MM double fft2 (const ImageMatrix &matrix_IN);
+	double fft2 (const ImageMatrix &matrix_IN, std::string method="default");
 	void ChebyshevTransform (const ImageMatrix &matrix_IN, unsigned int N);
 	void ChebyshevFourierTransform2D (double *coeff) const;
 	void Symlet5Transform (const ImageMatrix &matrix_IN);

@@ -31,7 +31,7 @@
 #include <string.h>
 
 #include "FeatureStatistics.h"
-
+#include <omp.h>
 typedef struct POINT1 {
 	long x,y;
 } point;
@@ -128,10 +128,10 @@ unsigned long bwlabel(ImageMatrix &Im, int level) {
 
 	/* now decrease every non-zero pixel by one because the first group was "2" */
 	for (y=0;y<h;y++)
-		for (x=0;x<w;x++)
-			if (pix_plane(y,x) != 0)
-				pix_plane(y,x) -= 1;
-
+		for (x=0;x<w;x++){
+		    if (std::isnan(pix_plane(y,x))) continue; //MM
+			if (pix_plane(y,x) != 0) pix_plane(y,x) -= 1;
+        }
 	delete [] stack;
 	return(group_counter-1);
 }
@@ -164,13 +164,23 @@ unsigned long FeatureCentroid(const ImageMatrix &Im, double object_index,double 
 	unsigned long x_mass=0,y_mass=0,mass=0;
 	readOnlyPixels pix_plane = Im.ReadablePixels();
 
-	for (y = 0; y < h; y++)
-		for (x = 0; x < w; x++)
+//	for (y = 0; y < h; y++)
+//		for (x = 0; x < w; x++)
+//			if (pix_plane(y,x) == object_index) {
+//				x_mass=x_mass+x+1;      /* the "+1" is only for compatability with matlab code (where index starts from 1) */
+//				y_mass=y_mass+y+1;      /* the "+1" is only for compatability with matlab code (where index starts from 1) */
+//				mass++;
+//			}
+
+    #pragma omp parallel for schedule(dynamic) reduction(+:x_mass,y_mass,mass)	
+	for (int y = 0; y < h; y++)
+		for (int x = 0; x < w; x++)
 			if (pix_plane(y,x) == object_index) {
-				x_mass=x_mass+x+1;      /* the "+1" is only for compatability with matlab code (where index starts from 1) */
-				y_mass=y_mass+y+1;      /* the "+1" is only for compatability with matlab code (where index starts from 1) */
+				x_mass+=x+1;      /* the "+1" is only for compatability with matlab code (where index starts from 1) */
+				y_mass+=y+1;      /* the "+1" is only for compatability with matlab code (where index starts from 1) */
 				mass++;
 			}
+			
 	if (x_centroid) *x_centroid=(double)x_mass/(double)mass;
 	if (y_centroid) *y_centroid=(double)y_mass/(double)mass;
 	return(mass);
@@ -231,6 +241,7 @@ long EulerNumber(const ImageMatrix &Im, int mode) {
 	// update pattern counters by scanning the image.
 	for (y = 1; y < Im.height; y++) {
 		for (x = 1; x < Im.width; x++) {
+		    if(std::isnan(pix_plane(y,x))) continue; //MM
 			// Get the quad-pixel at this image location
 			Imq = 0;
 			if (pix_plane(y-1,x-1) > 0) Imq |=  (1 << 3);
@@ -246,7 +257,44 @@ long EulerNumber(const ImageMatrix &Im, int mode) {
 			else if (i == 8 && i == 9) Cd++;
 		}
 	}
-	
+
+
+   //MM: We need to take into consideration the first column and the first row of the image when nan values exists
+   // as they might not be included by the neighboring pixels in the next row/column. The neighboring Pixles might be
+   //excluded in the computations due to their nan values
+        for (x = 0; x < Im.width-1; x++) {
+            if(std::isnan(pix_plane(0,x))) continue; //MM
+            // Get the quad-pixel at this image location
+            Imq = 0;
+            if (pix_plane(0 ,x) > 0) {
+                if (!pix_plane(1 ,x)> 0 || !pix_plane(1 ,x+1)>0 ) Imq |=  (1 << 0);
+            }
+            // find the matching pattern
+            for (i = 0; i < 10; i++) if (Imq == Px[i]) break;
+            // unsigned i always >= 0
+            // if      (i >= 0 && i <= 3) C1++;
+            if (i <= 3) C1++;
+            else if (i >= 4 && i <= 7) C3++;
+            else if (i == 8 && i == 9) Cd++;
+        }
+        for (y = 0; y < Im.height-1; y++) {
+            if(std::isnan(pix_plane(y,0))) continue; //MM
+            // Get the quad-pixel at this image location
+            Imq = 0;
+            if (pix_plane(y ,0) > 0) {
+                if (!pix_plane(y ,1)> 0 || !pix_plane(y+1 ,1)>0 ) Imq |=  (1 << 0);
+            }
+            // find the matching pattern
+            for (i = 0; i < 10; i++) if (Imq == Px[i]) break;
+            // unsigned i always >= 0
+            // if      (i >= 0 && i <= 3) C1++;
+            if (i <= 3) C1++;
+            else if (i >= 4 && i <= 7) C3++;
+            else if (i == 8 && i == 9) Cd++;
+        }
+
+
+
 	if (mode == 4)
 		return ( (C1 - C3 + (2*Cd)) / 4);
 	else

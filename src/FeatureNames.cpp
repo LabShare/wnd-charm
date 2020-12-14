@@ -300,7 +300,8 @@ FeatureGroup::FeatureGroup (const std::string &s, const FeatureAlgorithm *f, con
 	if (algorithm)
 		for (int i = 0; i < algorithm->n_features; i++) {
 			char buf[16];
-			sprintf (buf, " [%d]",i);
+			// sprintf (buf, " [%d]",i);
+			sprintf (buf, "[%d]",i); //MM 
 			labels.insert (labels.end(), name + buf);
 		}
 }
@@ -348,7 +349,8 @@ const FeatureGroup *FeatureNames::getGroupByName (const std::string &name) {
 			transform = getTransformByName(transform_name);
 			transforms.push_back ( transform );
 		}
-		found_trans_s = name.find_first_not_of(" ()",found_trans_e+1);
+		//found_trans_s = name.find_first_not_of(" ()",found_trans_e+1);
+		found_trans_s = name.find_first_not_of("()",found_trans_e+1);//MM
 		if (found_trans_s != std::string::npos) found_trans_e = name.find_first_of('(',found_trans_s+1);
 		else (found_trans_e = std::string::npos);
 	}
@@ -378,9 +380,11 @@ const FeatureGroup *FeatureNames::getGroupByName (const std::string &name) {
 // Normalize the whitespace in the group name
 	std::string name_norm = algorithm->name;
 	size_t i;
-	name_norm += " (";
+	// name_norm += " (";
+	name_norm += "("; //MM
 	for (i = transforms.size(); i > 0  ; i--) {
-		name_norm += transforms[i-1]->name + " (";
+		// name_norm += transforms[i-1]->name + " (";
+		name_norm += transforms[i-1]->name + "("; //MM
 	}
 	if (channel) name_norm += channel->name;
 	name_norm += ")";

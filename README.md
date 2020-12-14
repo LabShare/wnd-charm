@@ -70,3 +70,41 @@ The WND-CHARM Python API additionally requires the Python development package, S
 ## Test Images
 
 Please also visit the [IICBU Biological Image Repository](https://ome.irp.nia.nih.gov/iicbu2008), which provides a benchmark for testing and comparing the performance of image analysis algorithms for biological imaging.
+
+## What is new?
+
+The performance of WND-CHARM was profiled and improved using the following techniques.
+
+* Multi-threading capability (OpenMP directives) was added for the performance bottlenecks which were in the following codes. 
+    * /src/statistics/FeatureStatistics.cpp
+    * /src/textures/gabor.cpp
+    * /src/transforms/chebyshev.cpp
+* Optimization technique of Data Locality was implememted in the following code. 
+    * /src/statistics/CombFirst4Moments.cpp 
+    
+The number of threads can be set using `export OMP_NUM_THREADS=10`. Overall, the performance of WND-CHARM was improved by 45% using the new changes and by running with 10 threads.
+
+Furthermore, the functionality to read tiled-tiff images was added in src/cmatrix.cpp using both the native libtiff library as well as OME-Files library. WND-CHARM can now switch between libtiff and OME-Files libraries to read tiled-tiff images using a variable in src/cmatrix.cpp named useOMELibrary. Following example shows how to configure the WND-CHARM to take into effect the linkage with OME-Files.
+
+./configure --prefix=/Path/To/WND-CHARM/Binary LIBS='-L/Path/To/Installed/OME-Files/Library -lome-files -lome-xml -lome-xalan-util -lome-common -lome-xerces-util -L/usr/lib/x86_64-linux-gnu/ -lboost_iostreams  -lboost_system -lboost_filesystem -lxerces-c-3.2' CXXFLAGS='-g -O2 -fopenmp -I/Path/To/Installed/OME-Files/Include/Files'
+Then, run: make install
+
+In addition to the above changes, the state of the art functionality "Region Of Interest (ROI)" was implemented in WND-CHARM. If Mask (Labeled) Image is provided as an input argument, WND-CHARM automatically computes the features for ROIs (non-zeor labels) instead of the entire image. The ROI performance was significantly improved by confining the feature computations to a rectangular bounding box around ROI.
+Furthermore, the performance of ROI implementation was improved by multi-threading at the ROI level where each thread picks one ROI and computes the entire features for it. The input parameters to WND-CHARM were modified according to the requirements of a WIPP plugin. The outputs were also formatted according to the desired formats for WIPP plugins. WND-CHARM can now be executive using the following command and sets of input arguments.
+
+./wndchrm --DataPath /PATH/to/Input Intensity Image/Directory --output /PATH/to/Output/Directory --LabeledData /PATH/to/Mask Image/Directory --ImageTransformationName Original  --FeatureAlgorithmName PixelStatistics
+
+In the above command:
+
+* DataPath: refers to the directory which contains the input tiff intensity image.
+* output:   refers to the directory where the computed features file (in .csv format instead of .sig) is saved.
+* LabeledData: refers to the directory which contains the mask tiff image for ROI computation. This parameter is optional and WND-CHARM computes the features for the entire image if LabeledData is not specified. Please note that the pair of intensity and mask images inside DataPath and LabeledData directories should have the same filename. This is how the code matches the masks and intensity images when multiple of them are present inside the DataPath and LabeledData directories.
+* ImageTransformationName: The (optional) specific image transformation algorithm which is desired for the computation. Please refer to Tasks.cpp to learn more about the names of the available algorithms. Please note that the algorithms with the either names Fourier_1D_ColumnWise, Fourier_1D_RowWise, and Fourier_2D are additional algorithms specific to ROI case. 
+
+* FeatureAlgorithmName: The (optional) specific feature extraction algorithm which is desired for the computation over the chosen ImageTransformationName. Please refer to Tasks.cpp to learn more about the names of the available algorithms. 
+
+If ImageTransformationName and FeatureAlgorithmName are not specified, WND-CHARM computes the features for a short list of FeatureAlgorithmName and ImageTransformationName. Also, the long set of features can be alternatively selected using the input argument "--DesiredFeatures LongSet".
+ 
+ 
+ 
+  

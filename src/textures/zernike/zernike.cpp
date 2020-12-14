@@ -208,7 +208,9 @@ void mb_zernike2D (const ImageMatrix &Im, double order, double rad, double *zval
 	int L, N, D;
 
 // N is the smaller of Im.width and Im.height
-	N = Im.width < Im.height ? Im.width : Im.height;
+        //MM  N = Im.width < Im.height ? Im.width : Im.height;
+        N = Im.width > Im.height ? Im.width : Im.height; //MM: This change is needed for bounding box implementations to ensure disk is covering the entire area of the Image
+
 	if (order > 0) L = (int)order;
 	else L = 15;
 	assert (L < MAX_L);
@@ -239,6 +241,7 @@ void mb_zernike2D (const ImageMatrix &Im, double order, double rad, double *zval
 	double intensity;
 	for (i = 0; i < cols; i++)
 		for (j = 0; j < rows; j++) {
+		    if (std::isnan(I_pix_plane(j,i))) continue; //MM
 			intensity = I_pix_plane(j,i);
 			sum += intensity;
 			moment10 += (i+1) * intensity;
@@ -276,6 +279,9 @@ void mb_zernike2D (const ImageMatrix &Im, double order, double rad, double *zval
 	//	x = (double)(2*i+1-N)/(double)D;
 		x = (i+1 - m10_m00) / rad;
 		for (j = 0; j < rows; j++) {
+		
+		    if(std::isnan(I_pix_plane(j,i))) continue; //MM
+		    
 		// In the paper, the center of the unit circle was the center of the image
 		//	y = (double)(2*j+1-N)/(double)D;
 			y = (j+1 - m01_m00) / rad;

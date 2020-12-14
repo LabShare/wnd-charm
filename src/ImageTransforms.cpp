@@ -70,7 +70,40 @@ void FourierTransform::execute (const ImageMatrix &matrix_IN, ImageMatrix &matri
 static bool FourierTransformReg = ComputationTaskInstances::add (new FourierTransform);
 
 
-//===========================================================================
+//======================================MM=====================================
+FourierTransform2D::FourierTransform2D () : ImageTransform ("Fourier_2D_Mean") {};
+void FourierTransform2D::execute (const ImageMatrix &matrix_IN, ImageMatrix &matrix_OUT ) const {
+    if (verbosity > 3) std::cout << "Performing transform " << name << std::endl;
+    matrix_OUT.fft2(matrix_IN, "2DMeanForNan");
+    matrix_OUT.finish();
+}
+
+// Register a static instance of the class using a global bool
+static bool FourierTransform2DReg = ComputationTaskInstances::add (new FourierTransform2D);
+
+
+FourierTransform1DColumnWise::FourierTransform1DColumnWise () : ImageTransform ("Fourier_1D_ColumnWise") {};
+void FourierTransform1DColumnWise::execute (const ImageMatrix &matrix_IN, ImageMatrix &matrix_OUT ) const {
+    if (verbosity > 3) std::cout << "Performing transform " << name << std::endl;
+    matrix_OUT.fft2(matrix_IN, "1DColumnWise");
+    matrix_OUT.finish();
+}
+
+// Register a static instance of the class using a global bool
+static bool FourierTransform1DColReg = ComputationTaskInstances::add (new FourierTransform1DColumnWise);
+
+
+FourierTransform1DRowWise::FourierTransform1DRowWise () : ImageTransform ("Fourier_1D_RowWise") {};
+void FourierTransform1DRowWise::execute (const ImageMatrix &matrix_IN, ImageMatrix &matrix_OUT ) const {
+    if (verbosity > 3) std::cout << "Performing transform " << name << std::endl;
+    matrix_OUT.fft2(matrix_IN, "1DRowWise");
+    matrix_OUT.finish();
+}
+
+// Register a static instance of the class using a global bool
+static bool FourierTransform1DRowReg = ComputationTaskInstances::add (new FourierTransform1DRowWise);
+
+//=======================================MM====================================
 
 ChebyshevTransform::ChebyshevTransform () : ImageTransform ("Chebyshev") {};
 

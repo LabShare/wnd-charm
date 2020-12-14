@@ -97,9 +97,20 @@ void haralick2D(const ImageMatrix &Im, double distance, double *out) {
 		if (features->meas_corr2 > max[12]) max[12] = features->meas_corr2;
 		/* (14) Maximal Correlation Coefficient */
 		sum[13] += features->max_corr_coef;
-		if (features->max_corr_coef < min[13]) min[13] = features->max_corr_coef;
-		if (features->max_corr_coef > max[13]) max[13] = features->max_corr_coef;
-		free(features);
+                //MM if (features->max_corr_coef < min[13]) min[13] = features->max_corr_coef;
+                //MM if (features->max_corr_coef > max[13]) max[13] = features->max_corr_coef;
+
+                //MM:
+                if (std::isnan(features->max_corr_coef)) {
+                    min[13]=std::numeric_limits<double>::quiet_NaN();
+                    max[13]=std::numeric_limits<double>::quiet_NaN();
+                }
+                else {
+                     if (features->max_corr_coef < min[13]) min[13] = features->max_corr_coef;
+                     if (features->max_corr_coef > max[13]) max[13] = features->max_corr_coef;
+                }
+
+                free(features);
 	}
 
 	for (y = 0; y < Im.height; y++)

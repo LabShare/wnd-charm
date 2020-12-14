@@ -1,0 +1,137 @@
+{
+    "name": "WNDCHARM-ROI",
+    "version": "0.2.4",
+    "title": "Multi-threaded WND-CHARM with ROI Capability",
+    "description": "Multi-threaded WND-CHARM with support for Region of Interest (ROI)",
+    "author": "Mahdi Maghrebi",
+    "institution": "National Center for Advancing Translational Sciences, National Institutes of Health",
+    "containerId": "labshare/polus-wnd-charm-plugin:0.2.4",
+    "inputs": [    
+        {
+            "name": "DataPath",
+            "type": "collection",
+            "description": "The full path to input tiled-tiff image",
+            "required": "True"
+        },
+        {
+            "name": "LabeledData",
+            "type": "collection",
+            "description": "The full path to input tiled-tiff mask for ROI computations (Optional)",
+            "required": "True"
+        },      
+        {
+            "name": "DesiredFeatures",
+            "type": "enum",
+			"options": {
+				"values": [
+					"LongSet",
+                    "ShortSet",
+  					"SpecificAlgorithm"				 
+				]
+			},
+            "description": "The desired set of features to be computed",
+            "required": "True"
+        },      
+        {
+            "name": "ImageTransformationName",
+            "type": "enum",
+			"options": {
+				"values": [
+					"Original",
+                    "Fourier_1D_ColumnWise",
+  					"Fourier_1D_RowWise",
+                    "Fourier_2D_Mean",
+                    "Fourier",
+					"Wavelet",
+                    "Chebyshev",                                        
+					"Chebyshev-Fourier_1D_ColumnWise",
+                    "Chebyshev-Fourier_1D_RowWise",
+					"Chebyshev-Fourier_2D_Mean",
+					"Chebyshev-Fourier",
+                    "Wavelet-Fourier_1D_ColumnWise",
+					"Wavelet-Fourier_1D_RowWise",
+                    "Wavelet-Fourier_2D_Mean",  
+                    "Wavelet-Fourier",                      
+					"Fourier_1D_ColumnWise-Wavelet",
+                    "Fourier_1D_RowWise-Wavelet",
+					"Fourier_2D_Mean-Wavelet",	
+					"Fourier-Wavelet",				
+					"Fourier_1D_ColumnWise-Chebyshev",
+  					"Fourier_1D_RowWise-Chebyshev",
+                    "Fourier_2D_Mean-Chebyshev",
+                    "Fourier-Chebyshev",
+					"Chebyshev-Wavelet",
+                    "Edge",                                        
+					"Fourier_1D_ColumnWise-Edge",
+                    "Fourier_1D_RowWise-Edge",
+					"Fourier_2D_Mean-Edge",   
+					"Fourier-Edge",                 
+					"Wavelet-Edge"					 
+				]
+			},
+            "description": "The desired algorithm for image transformation (Optional)",
+            "required": "False"
+        },
+        {
+            "name": "FeatureAlgorithmName",
+            "type": "enum",
+			"options": {
+				"values": [
+					"PixelStatistics",
+                    "Edge",
+  					"Otsu",
+                    "Inverse-Otsu",
+					"Gabor",
+                    "Chebyshev-Fourier",                                        
+					"Chebyshev",
+                    "Zernike",
+					"Moments",
+                    "Haralick",
+					"Histograms",
+                    "Tamura",                      
+					"Radon",
+                    "Fractal",
+					"Gini"
+				]
+            },
+            "description": "The desired feature extraction algorithm (Optional)",
+            "required": "False"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "output",
+            "type": "csvCollection",
+            "description": "The path to the directory containing the computed features"
+        }
+    ],
+    "ui": [
+        {
+            "key": "inputs.DataPath",
+            "title": "Input tiled-tiff image",
+            "description": "Insert the path to the image collection"
+        },
+        {
+            "key": "inputs.LabeledData",
+            "title": "Input tiled-tiff mask for ROI computations (Optional)",
+            "description": "Insert the path to the image collection"         
+        },
+        {
+            "key": "inputs.DesiredFeatures",
+            "title": "The desired feature sets for computation",            
+            "description": "Select the desired feature(s) for computation"
+        },
+        {
+            "key": "inputs.ImageTransformationName",
+            "title": "Desried image transformation algorithm",      
+            "description": "Select the desired Image Transformation algorithm",
+            "condition": "model.inputs.DesiredFeatures==['SpecificAlgorithm']"        
+        },
+        {
+            "key": "inputs.FeatureAlgorithmName",
+            "title": "Desired feature extraction algorithm ",  
+            "description": "Select the desired feature extraction algorithm",
+            "condition": "model.inputs.DesiredFeatures==['SpecificAlgorithm']"           
+        }
+    ]
+}
