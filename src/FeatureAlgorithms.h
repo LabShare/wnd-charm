@@ -153,4 +153,11 @@ class ColorHistogram : public FeatureAlgorithm {
 		virtual std::vector<double> execute (const ImageMatrix &IN_matrix) const;
 };
 
+//MM:
+class Morphological: public FeatureAlgorithm {
+public:
+    Morphological();
+    virtual std::vector<double> execute(const ImageMatrix &IN_matrix) const;
+};
+
 #endif //__FEATURE_ALGORITHMS_H_

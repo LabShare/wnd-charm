@@ -51,7 +51,7 @@ bool FeatureAlgorithm::register_task() const {
 }
 
 //===========================================================================
-ChebyshevFourierCoefficients::ChebyshevFourierCoefficients() : FeatureAlgorithm ("Chebyshev-Fourier Coefficients", 32) {
+ChebyshevFourierCoefficients::ChebyshevFourierCoefficients() : FeatureAlgorithm ("ChebyshevFourierCoefficients", 32) {
 //	cout << "Instantiating new " << name << " object." << endl;
 }
 
@@ -70,7 +70,7 @@ static bool ChebyshevFourierCoefficientsReg = ComputationTaskInstances::add (new
 
 
 //===========================================================================
-ChebyshevCoefficients::ChebyshevCoefficients() : FeatureAlgorithm ("Chebyshev Coefficients", 32)  {
+ChebyshevCoefficients::ChebyshevCoefficients() : FeatureAlgorithm ("ChebyshevCoefficients", 32)  {
 //	cout << "Instantiating new " << name << " object." << endl;
 }
 
@@ -95,7 +95,7 @@ static bool ChebyshevCoefficientsReg = ComputationTaskInstances::add (new Chebys
 
 //===========================================================================
 
-ZernikeCoefficients::ZernikeCoefficients() : FeatureAlgorithm ("Zernike Coefficients", 72) {
+ZernikeCoefficients::ZernikeCoefficients() : FeatureAlgorithm ("ZernikeCoefficients", 72) {
 	//cout << "Instantiating new " << name << " object." << endl;
 }
 
@@ -118,7 +118,7 @@ static bool ZernikeCoefficientsReg = ComputationTaskInstances::add (new ZernikeC
 
 //===========================================================================
 
-HaralickTextures::HaralickTextures() : FeatureAlgorithm ("Haralick Textures", 28) {
+HaralickTextures::HaralickTextures() : FeatureAlgorithm ("HaralickTextures", 28) {
 	//cout << "Instantiating new " << name << " object." << endl;
 }
 
@@ -139,7 +139,7 @@ static bool HaralickTexturesReg = ComputationTaskInstances::add (new HaralickTex
 
 //===========================================================================
 
-MultiscaleHistograms::MultiscaleHistograms() : FeatureAlgorithm ("Multiscale Histograms", 24) {
+MultiscaleHistograms::MultiscaleHistograms() : FeatureAlgorithm ("MultiscaleHistograms", 24) {
 	//cout << "Instantiating new " << name << " object." << endl;
 }
 
@@ -160,7 +160,7 @@ static bool MultiscaleHistogramsReg = ComputationTaskInstances::add (new Multisc
 
 //===========================================================================
 
-TamuraTextures::TamuraTextures() : FeatureAlgorithm ("Tamura Textures", 6) {
+TamuraTextures::TamuraTextures() : FeatureAlgorithm ("TamuraTextures", 6) {
 	//cout << "Instantiating new " << name << " object." << endl;
 }
 
@@ -181,7 +181,7 @@ static bool TamuraTexturesReg = ComputationTaskInstances::add (new TamuraTexture
 
 //===========================================================================
 
-CombFirstFourMoments::CombFirstFourMoments() : FeatureAlgorithm ("Comb Moments", 48) {
+CombFirstFourMoments::CombFirstFourMoments() : FeatureAlgorithm ("CombMoments", 48) {
 	//cout << "Instantiating new " << name << " object." << endl;
 }
 
@@ -202,7 +202,7 @@ static bool CombFirstFourMomentsReg = ComputationTaskInstances::add (new CombFir
 
 //===========================================================================
 
-RadonCoefficients::RadonCoefficients() : FeatureAlgorithm ("Radon Coefficients", 12) {
+RadonCoefficients::RadonCoefficients() : FeatureAlgorithm ("RadonCoefficients", 12) {
 	//cout << "Instantiating new " << name << " object." << endl;
 }
 
@@ -229,7 +229,7 @@ static bool RadonCoefficientsReg = ComputationTaskInstances::add (new RadonCoeff
    the code is based on: CM Wu, YC Chen and KS Hsieh, Texture features for classification of ultrasonic liver images, IEEE Trans Med Imag 11 (1992) (2), pp. 141Ð152.
    method of approaximation of CC Chen, JS Daponte and MD Fox, Fractal feature analysis and classification in medical imaging, IEEE Trans Med Imag 8 (1989) (2), pp. 133Ð142.
 */
-FractalFeatures::FractalFeatures() : FeatureAlgorithm ("Fractal Features", 20) {
+FractalFeatures::FractalFeatures() : FeatureAlgorithm ("FractalFeatures", 20) {
 	//cout << "Instantiating new " << name << " object." << endl;
 }
 
@@ -250,12 +250,16 @@ std::vector<double> FractalFeatures::execute (const ImageMatrix &IN_matrix) cons
 		step = 1;   // avoid an infinite loop if the image is small
 	for( k = 1; k < K; k = k + step ) {  
 		double sum = 0.0;
-		for( x = 0; x < width; x++ )
-			for( y = 0; y < height - k; y++ )
-				sum += fabs( IN_matrix_pix_plane(y,x) - IN_matrix_pix_plane(y+k,x) );
-		for( x = 0; x < width - k; x++ )
-			for( y = 0; y < height; y++ )
-				sum += fabs( IN_matrix_pix_plane(y,x) - IN_matrix_pix_plane(y,x + k) );
+        for( x = 0; x < width; x++ )
+            for( y = 0; y < height - k; y++ ){
+                if(std::isnan(IN_matrix_pix_plane(y,x)) || std::isnan(IN_matrix_pix_plane(y+k,x))) continue; //MM
+                sum += fabs( IN_matrix_pix_plane(y,x) - IN_matrix_pix_plane(y+k,x) );
+            }
+        for( x = 0; x < width - k; x++ )
+            for( y = 0; y < height; y++ ){
+                if(std::isnan(IN_matrix_pix_plane(y,x)) || std::isnan(IN_matrix_pix_plane(y,x+k))) continue; //MM
+                sum += fabs( IN_matrix_pix_plane(y,x) - IN_matrix_pix_plane(y,x + k) );
+            }         
 		if( bin < bins )
 			coeffs[ bin++ ] = sum / ( width * ( width - k ) + height * ( height - k ) );    
 	}
@@ -269,7 +273,7 @@ static bool FractalFeaturesReg = ComputationTaskInstances::add (new FractalFeatu
 
 //===========================================================================
 
-PixelIntensityStatistics::PixelIntensityStatistics() : FeatureAlgorithm ("Pixel Intensity Statistics", 5) {
+PixelIntensityStatistics::PixelIntensityStatistics() : FeatureAlgorithm ("PixelIntensityStatistics", 5) {
 	//cout << "Instantiating new " << name << " object." << endl;
 }
 
@@ -296,7 +300,7 @@ static bool PixelIntensityStatisticsReg = ComputationTaskInstances::add (new Pix
         
 //===========================================================================
 
-EdgeFeatures::EdgeFeatures() : FeatureAlgorithm ("Edge Features", 28) {
+EdgeFeatures::EdgeFeatures() : FeatureAlgorithm ("EdgeFeatures", 28) {
 	//cout << "Instantiating new " << name << " object." << endl;
 }
 
@@ -343,7 +347,7 @@ static bool EdgeFeaturesReg = ComputationTaskInstances::add (new EdgeFeatures);
 
 //===========================================================================
 
-ObjectFeatures::ObjectFeatures() : FeatureAlgorithm ("Otsu Object Features", 34) {
+ObjectFeatures::ObjectFeatures() : FeatureAlgorithm ("OtsuObjectFeatures", 34) {
 	//cout << "Instantiating new " << name << " object." << endl;
 }
 
@@ -401,7 +405,7 @@ static bool ObjectFeaturesReg = ComputationTaskInstances::add (new ObjectFeature
 
 
 //===========================================================================
-InverseObjectFeatures::InverseObjectFeatures() : FeatureAlgorithm ("Inverse-Otsu Object Features", 34) {
+InverseObjectFeatures::InverseObjectFeatures() : FeatureAlgorithm ("InverseOtsuObjectFeatures", 34) {
 	//cout << "Instantiating new " << name << " object." << endl;
 }
 
@@ -419,7 +423,7 @@ static bool InverseObjectFeaturesReg = ComputationTaskInstances::add (new Invers
 
 //===========================================================================
 
-GaborTextures::GaborTextures() : FeatureAlgorithm ("Gabor Textures", 7) {
+GaborTextures::GaborTextures() : FeatureAlgorithm ("GaborTextures", 7) {
 	//cout << "Instantiating new " << name << " object." << endl;
 }
 
@@ -445,7 +449,7 @@ static bool GaborTexturesReg = ComputationTaskInstances::add (new GaborTextures)
    paper reference: Roberto G. Abraham, Sidney van den Bergh, Preethi Nair, A NEW APPROACH TO GALAXY MORPHOLOGY. I. ANALYSIS OF THE SLOAN DIGITAL SKY
         SURVEY EARLY DATA RELEASE, The Astrophysical Journal, vol. 588, p. 218-229, 2003.
 */
-GiniCoefficient::GiniCoefficient() : FeatureAlgorithm ("Gini Coefficient", 1) {
+GiniCoefficient::GiniCoefficient() : FeatureAlgorithm ("GiniCoefficient", 1) {
 	//cout << "Instantiating new " << name << " object." << endl;
 }
 
@@ -532,3 +536,24 @@ std::vector<double> ColorHistogram::execute (const ImageMatrix &IN_matrix) const
 
 // Register a static instance of the class using a global bool
 static bool ColorHistogramReg = ComputationTaskInstances::add (new ColorHistogram);
+
+//MM:
+//===========================================================================
+
+Morphological::Morphological() : FeatureAlgorithm ("Morphological", 58) {
+    //cout << "Instantiating new " << name << " object." << endl;
+}
+
+std::vector<double> Morphological::execute (const ImageMatrix &IN_matrix) const {
+    std::vector<double> coeffs;
+    if (verbosity > 3) std::cout << "calculating " << name << std::endl;
+
+    coeffs.resize (n_features, 0);
+
+    IN_matrix.Morphology(coeffs.data());
+    return coeffs;
+}
+
+
+// Register a static instance of the class using a global bool
+static bool MorphologicalsReg = ComputationTaskInstances::add (new Morphological);

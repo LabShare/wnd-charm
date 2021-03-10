@@ -310,8 +310,12 @@ void FeatureComputationPlanExecutor::reset () {
 	// note that the plan stays.
 }
 
-const FeatureComputationPlan *StdFeatureComputationPlans::getFeatureSet () {
-	static FeatureComputationPlan *the_plan = new FeatureComputationPlan ("Standard Feature Set");
+//MM const FeatureComputationPlan *StdFeatureComputationPlans::getFeatureSet () {
+//MM	static FeatureComputationPlan *the_plan = new FeatureComputationPlan ("Standard Feature Set");	
+const FeatureComputationPlan *StdFeatureComputationPlans::getFeatureSet (bool flag) {
+    static FeatureComputationPlan *the_plan = new FeatureComputationPlan ("Standard Feature Set", flag);
+	
+	
 	if ( the_plan->isFinalized() ) return the_plan;
 
 	addStdFeatures (the_plan);
@@ -331,14 +335,80 @@ const FeatureComputationPlan *StdFeatureComputationPlans::getFeatureSetColor () 
 	return (the_plan);
 }
 
-const FeatureComputationPlan *StdFeatureComputationPlans::getFeatureSetLong () {
-	static FeatureComputationPlan *the_plan = new FeatureComputationPlan ("Long Feature Set");
+//MM const FeatureComputationPlan *StdFeatureComputationPlans::getFeatureSetLong () {
+const FeatureComputationPlan *StdFeatureComputationPlans::getFeatureSetLong (bool flag) {
+//MM	static FeatureComputationPlan *the_plan = new FeatureComputationPlan ("Long Feature Set");
+	    static FeatureComputationPlan *the_plan = new FeatureComputationPlan ("Long Feature Set", flag);
 	if ( the_plan->isFinalized() ) return the_plan;
 
 	addLongFeatures (the_plan, false);
 	the_plan->feature_vec_type = fv_long;
 	the_plan->finalize();
 	return (the_plan);
+}
+
+
+//MM
+const FeatureComputationPlan *StdFeatureComputationPlans::getFeatureSetbyName (char *ImageTransformationName, char *FeatureAlgorithmName) {
+    static FeatureComputationPlan *the_plan = new FeatureComputationPlan ("Long Feature Set");
+    if ( the_plan->isFinalized() ) return the_plan;
+
+    std::string FeatureName,TransformationName;
+
+    if      (!strcmp(FeatureAlgorithmName,"Edge"))      FeatureName= "EdgeFeatures";
+    else if (!strcmp(FeatureAlgorithmName,"Otsu")) FeatureName= "OtsuObjectFeatures";
+    else if (!strcmp(FeatureAlgorithmName,"Inverse-Otsu")) FeatureName= "InverseOtsuObjectFeatures";
+    else if (!strcmp(FeatureAlgorithmName,"Gabor")) FeatureName= "GaborTextures";
+    else if (!strcmp(FeatureAlgorithmName,"Chebyshev-Fourier")) FeatureName= "ChebyshevFourierCoefficients";
+    else if (!strcmp(FeatureAlgorithmName,"Chebyshev")) FeatureName= "ChebyshevCoefficients";
+    else if (!strcmp(FeatureAlgorithmName,"Zernike")) FeatureName= "ZernikeCoefficients";
+    else if (!strcmp(FeatureAlgorithmName,"Moments")) FeatureName= "CombMoments";
+    else if (!strcmp(FeatureAlgorithmName,"Haralick")) FeatureName= "HaralickTextures";
+    else if (!strcmp(FeatureAlgorithmName,"Histograms")) FeatureName= "MultiscaleHistograms";
+    else if (!strcmp(FeatureAlgorithmName,"Tamura")) FeatureName= "TamuraTextures";
+    else if (!strcmp(FeatureAlgorithmName,"Radon")) FeatureName= "RadonCoefficients";
+    else if (!strcmp(FeatureAlgorithmName,"Fractal")) FeatureName= "FractalFeatures";
+    else if (!strcmp(FeatureAlgorithmName,"PixelStatistics")) FeatureName= "PixelIntensityStatistics";
+    else if (!strcmp(FeatureAlgorithmName,"Gini")) FeatureName= "GiniCoefficient";
+    else if (!strcmp(FeatureAlgorithmName,"Morphological")) FeatureName= "Morphological";
+    else (std::cout<< "Error: Unrecognized FeatureAlgorithmName");
+
+    if      (!strcmp(ImageTransformationName,"Original"))      TransformationName= "()";
+    else if (!strcmp(ImageTransformationName,"Fourier_1D_ColumnWise")) TransformationName= "(Fourier_1D_ColumnWise())";
+    else if (!strcmp(ImageTransformationName,"Fourier_1D_RowWise")) TransformationName= "(Fourier_1D_RowWise())";
+    else if (!strcmp(ImageTransformationName,"Fourier_2D_Mean")) TransformationName= "(Fourier_2D_Mean())";
+    else if (!strcmp(ImageTransformationName,"Fourier")) TransformationName= "(Fourier())";
+    else if (!strcmp(ImageTransformationName,"Wavelet")) TransformationName= "(Wavelet())";
+    else if (!strcmp(ImageTransformationName,"Chebyshev")) TransformationName= "(Chebyshev())";
+    else if (!strcmp(ImageTransformationName,"Chebyshev-Fourier_1D_ColumnWise")) TransformationName= "(Chebyshev(Fourier_1D_ColumnWise()))";
+    else if (!strcmp(ImageTransformationName,"Chebyshev-Fourier_1D_RowWise")) TransformationName= "(Chebyshev(Fourier_1D_RowWise()))";
+    else if (!strcmp(ImageTransformationName,"Chebyshev-Fourier_2D_Mean")) TransformationName= "(Chebyshev(Fourier_2D_Mean()))";
+    else if (!strcmp(ImageTransformationName,"Chebyshev-Fourier")) TransformationName= "(Chebyshev(Fourier))";
+    else if (!strcmp(ImageTransformationName,"Wavelet-Fourier_1D_ColumnWise")) TransformationName= "(Wavelet(Fourier_1D_ColumnWise()))";
+    else if (!strcmp(ImageTransformationName,"Wavelet-Fourier_1D_RowWise")) TransformationName= "(Wavelet(Fourier_1D_RowWise()))";
+    else if (!strcmp(ImageTransformationName,"Wavelet-Fourier_2D_Mean")) TransformationName= "(Wavelet(Fourier_2D_Mean()))";
+    else if (!strcmp(ImageTransformationName,"Wavelet-Fourier")) TransformationName= "(Wavelet(Fourier()))";
+    else if (!strcmp(ImageTransformationName,"Fourier_1D_ColumnWise-Wavelet")) TransformationName= "(Fourier_1D_ColumnWise(Wavelet()))";
+    else if (!strcmp(ImageTransformationName,"Fourier_1D_RowWise-Wavelet")) TransformationName= "(Fourier_1D_RowWise(Wavelet()))";
+    else if (!strcmp(ImageTransformationName,"Fourier_2D_Mean-Wavelet")) TransformationName= "(Fourier_2D_Mean(Wavelet()))";
+    else if (!strcmp(ImageTransformationName,"Fourier-Wavelet")) TransformationName= "(Fourier(Wavelet()))";
+    else if (!strcmp(ImageTransformationName,"Fourier_1D_ColumnWise-Chebyshev")) TransformationName= "(Fourier_1D_ColumnWise(Chebyshev()))";
+    else if (!strcmp(ImageTransformationName,"Fourier_1D_RowWise-Chebyshev")) TransformationName= "(Fourier_1D_RowWise(Chebyshev()))";
+    else if (!strcmp(ImageTransformationName,"Fourier_2D_Mean-Chebyshev")) TransformationName= "(Fourier_2D_Mean(Chebyshev()))";
+    else if (!strcmp(ImageTransformationName,"Fourier-Chebyshev")) TransformationName= "(Fourier(Chebyshev()))";
+    else if (!strcmp(ImageTransformationName,"Chebyshev-Wavelet")) TransformationName= "(Chebyshev(Wavelet()))";
+    else if (!strcmp(ImageTransformationName,"Edge")) TransformationName= "(Edge())";
+    else if (!strcmp(ImageTransformationName,"Fourier_1D_ColumnWise-Edge")) TransformationName= "(Fourier_1D_ColumnWise(Edge()))";
+    else if (!strcmp(ImageTransformationName,"Fourier_1D_RowWise-Edge")) TransformationName= "(Fourier_1D_RowWise(Edge()))";
+    else if (!strcmp(ImageTransformationName,"Fourier_2D_Mean-Edge")) TransformationName= "(Fourier_2D_Mean(Edge()))";
+    else if (!strcmp(ImageTransformationName,"Fourier-Edge")) TransformationName= "(Fourier(Edge()))";
+    else if (!strcmp(ImageTransformationName,"Wavelet-Edge")) TransformationName= "(Wavelet(Edge()))";
+    else (std::cout<< "Error: Unrecognized ImageTransformationName");
+
+    the_plan->add(FeatureName + TransformationName);
+    the_plan->feature_vec_type = fv_long;
+    the_plan->finalize();
+    return (the_plan);
 }
 
 const FeatureComputationPlan *StdFeatureComputationPlans::getFeatureSetLongColor () {
@@ -360,9 +430,112 @@ void StdFeatureComputationPlans::addLongFeatures (FeatureComputationPlan *the_pl
 	if (color)
 		addColorFeatures (the_plan);
 
+    //MM
+    if (the_plan->NaNFlag){
+        addGroupBFeatures (the_plan, "(Fourier_1D_ColumnWise())");
+        addGroupCFeatures (the_plan, "(Fourier_1D_ColumnWise())");
+
+        addGroupBFeatures (the_plan, "(Fourier_1D_RowWise())");
+        addGroupCFeatures (the_plan, "(Fourier_1D_RowWise())");
+
+        addGroupBFeatures (the_plan, "(Fourier_2D_Mean())");
+        addGroupCFeatures (the_plan, "(Fourier_2D_Mean())");
+
+        addGroupBFeatures (the_plan, "(Wavelet())");
+        addGroupCFeatures (the_plan, "(Wavelet())");
+
+        addGroupBFeatures (the_plan, "(Chebyshev())");
+        addGroupCFeatures (the_plan, "(Chebyshev())");
+
+        // Fourier, then Chebyshev
+        addGroupCFeatures (the_plan, "(Chebyshev(Fourier_1D_ColumnWise()))");
+        addGroupCFeatures (the_plan, "(Chebyshev(Fourier_1D_RowWise()))");
+        addGroupCFeatures (the_plan, "(Chebyshev(Fourier_2D_Mean()))");
+
+        // Fourier, then Wavelet
+        addGroupCFeatures (the_plan, "(Wavelet(Fourier_1D_ColumnWise()))");
+        addGroupCFeatures (the_plan, "(Wavelet(Fourier_1D_RowWise()))");
+        addGroupCFeatures (the_plan, "(Wavelet(Fourier_2D_Mean()))");
+
+        // Wavelet, then Fourier
+        addGroupBFeatures (the_plan, "(Fourier_1D_ColumnWise(Wavelet()))");
+        addGroupCFeatures (the_plan, "(Fourier_1D_ColumnWise(Wavelet()))");
+
+        addGroupBFeatures (the_plan, "(Fourier_1D_RowWise(Wavelet()))");
+        addGroupCFeatures (the_plan, "(Fourier_1D_RowWise(Wavelet()))");
+
+        addGroupBFeatures (the_plan, "(Fourier_2D_Mean(Wavelet()))");
+        addGroupCFeatures (the_plan, "(Fourier_2D_Mean(Wavelet()))");
+
+        // Chebyshev, then Fourier
+        addGroupCFeatures (the_plan, "(Fourier_1D_ColumnWise(Chebyshev()))");
+        addGroupCFeatures (the_plan, "(Fourier_1D_RowWise(Chebyshev()))");
+        addGroupCFeatures (the_plan, "(Fourier_2D_Mean(Chebyshev()))");
+
+        // Wavelet, then Chebyshev
+        addGroupCFeatures (the_plan, "(Chebyshev(Wavelet()))");
+
+        // Edge
+        addGroupBFeatures (the_plan, "(Edge())");
+        addGroupCFeatures (the_plan, "(Edge())");
+
+        // Edge, then Fourier
+        addGroupBFeatures (the_plan, "(Fourier_1D_ColumnWise(Edge()))");
+        addGroupCFeatures (the_plan, "(Fourier_1D_ColumnWise(Edge()))");
+
+        addGroupBFeatures (the_plan, "(Fourier_1D_RowWise(Edge()))");
+        addGroupCFeatures (the_plan, "(Fourier_1D_RowWise(Edge()))");
+
+        addGroupBFeatures (the_plan, "(Fourier_2D_Mean(Edge()))");
+        addGroupCFeatures (the_plan, "(Fourier_2D_Mean(Edge()))");
+
+        // Edge, then wavelet
+        addGroupBFeatures (the_plan, "(Wavelet(Edge()))");
+        addGroupCFeatures (the_plan, "(Wavelet(Edge()))");
+    }
+    else{
+        addGroupBFeatures (the_plan, "(Fourier())");
+        addGroupCFeatures (the_plan, "(Fourier())");
+
+        addGroupBFeatures (the_plan, "(Wavelet())");
+        addGroupCFeatures (the_plan, "(Wavelet())");
+
+        addGroupBFeatures (the_plan, "(Chebyshev())");
+        addGroupCFeatures (the_plan, "(Chebyshev())");
+
+        // Fourier, then Chebyshev
+        addGroupCFeatures (the_plan, "(Chebyshev(Fourier()))");
+
+        // Fourier, then Wavelet
+        addGroupCFeatures (the_plan, "(Wavelet(Fourier()))");
+
+        // Wavelet, then Fourier
+        addGroupBFeatures (the_plan, "(Fourier(Wavelet()))");
+        addGroupCFeatures (the_plan, "(Fourier(Wavelet()))");
+
+        // Chebyshev, then Fourier
+        addGroupCFeatures (the_plan, "(Fourier(Chebyshev()))");
+
+        // Wavelet, then Chebyshev
+        addGroupCFeatures (the_plan, "(Chebyshev(Wavelet()))");
+
+        // Edge
+        addGroupBFeatures (the_plan, "(Edge())");
+        addGroupCFeatures (the_plan, "(Edge())");
+
+        // Edge, then Fourier
+        addGroupBFeatures (the_plan, "(Fourier(Edge()))");
+        addGroupCFeatures (the_plan, "(Fourier(Edge()))");
+
+        // Edge, then wavelet
+        addGroupBFeatures (the_plan, "(Wavelet(Edge()))");
+        addGroupCFeatures (the_plan, "(Wavelet(Edge()))");
+    }
+
+/* MM
 	addGroupBFeatures (the_plan, "(Fourier ())");
 	addGroupCFeatures (the_plan, "(Fourier ())");
-
+    
 	addGroupBFeatures (the_plan, "(Wavelet ())");
 	addGroupCFeatures (the_plan, "(Wavelet ())");
 
@@ -396,16 +569,16 @@ void StdFeatureComputationPlans::addLongFeatures (FeatureComputationPlan *the_pl
 	// Edge, then wavelet
 	addGroupBFeatures (the_plan, "(Wavelet (Edge ()))");
 	addGroupCFeatures (the_plan, "(Wavelet (Edge ()))");
-
+*/
 }
 
 void StdFeatureComputationPlans::addGroupAFeatures (FeatureComputationPlan *the_plan, std::string transform) {
 	const char* the_fs[] = {
 	// Group A:
-		"Edge Features ",
-		"Otsu Object Features ",
-		"Inverse-Otsu Object Features ",
-		"Gabor Textures "
+		"EdgeFeatures",
+		"OtsuObjectFeatures",
+		"InverseOtsuObjectFeatures",
+		"GaborTextures"
 	};
 	for (size_t i = 0; i < ( sizeof(the_fs) / sizeof(the_fs[0]) ); i++) {
 		the_plan->add(std::string(the_fs[i]) + transform);
@@ -415,9 +588,9 @@ void StdFeatureComputationPlans::addGroupAFeatures (FeatureComputationPlan *the_
 void StdFeatureComputationPlans::addGroupBFeatures (FeatureComputationPlan *the_plan, std::string transform) {
 	const char* the_fs[] = {
 	// Group B:
-		"Chebyshev-Fourier Coefficients ",
-		"Chebyshev Coefficients ",
-		"Zernike Coefficients "
+		"ChebyshevFourierCoefficients",
+		"ChebyshevCoefficients",
+		"ZernikeCoefficients"
 	};
 	for (size_t i = 0; i < ( sizeof(the_fs) / sizeof(the_fs[0]) ); i++) {
 		the_plan->add(std::string(the_fs[i]) + transform);
@@ -427,14 +600,14 @@ void StdFeatureComputationPlans::addGroupBFeatures (FeatureComputationPlan *the_
 void StdFeatureComputationPlans::addGroupCFeatures (FeatureComputationPlan *the_plan, std::string transform) {
 	const char* the_fs[] = {
 	// Group C:
-		"Comb Moments ",
-		"Haralick Textures ",
-		"Multiscale Histograms ",
-		"Tamura Textures ",
-		"Radon Coefficients ",
-		"Fractal Features ",   
-		"Pixel Intensity Statistics ",   
-		"Gini Coefficient "
+		"CombMoments",
+		"HaralickTextures",
+		"MultiscaleHistograms",
+		"TamuraTextures",
+		"RadonCoefficients",
+		"FractalFeatures",   
+		"PixelIntensityStatistics",   
+		"GiniCoefficient"
 	};
 	for (size_t i = 0; i < ( sizeof(the_fs) / sizeof(the_fs[0]) ); i++) {
 		the_plan->add(std::string(the_fs[i]) + transform);
@@ -458,7 +631,7 @@ void StdFeatureComputationPlans::addColorFeatures (FeatureComputationPlan *the_p
 	addGroupCFeatures (the_plan, "(Chebyshev (Hue ()))");
 }
 
-
+/* MM
 void StdFeatureComputationPlans::addStdFeatures (FeatureComputationPlan *the_plan) {
 
 	const char* the_fs[] = {
@@ -506,5 +679,138 @@ void StdFeatureComputationPlans::addStdFeatures (FeatureComputationPlan *the_pla
 		the_plan->add(the_fs[i]);
 	}
 }
+*/
+
+//MM
+void StdFeatureComputationPlans::addStdFeatures (FeatureComputationPlan *the_plan) {
+
+    if(the_plan->NaNFlag){
+        const char* the_fs[] = {
+            "ChebyshevFourierCoefficients()",
+            "ChebyshevFourierCoefficients(Fourier_2D())",
+            "ChebyshevFourierCoefficients(Fourier_1D_ColumnWise())",
+            "ChebyshevFourierCoefficients(Fourier_1D_RowWise())",
+            "ChebyshevCoefficients()",
+            "ChebyshevCoefficients(Fourier_2D())",
+            "ChebyshevCoefficients(Fourier_1D_ColumnWise())",
+            "ChebyshevCoefficients(Fourier_1D_RowWise())",
+            "CombMoments()",
+            "CombMoments(Chebyshev())",
+            "CombMoments(Chebyshev(Fourier_2D()))",
+            "CombMoments(Chebyshev(Fourier_1D_ColumnWise()))",
+            "CombMoments(Chebyshev(Fourier_1D_RowWise()))",
+            "CombMoments(Fourier_2D())",
+            "CombMoments(Fourier_1D_ColumnWise())",
+            "CombMoments(Fourier_1D_RowWise())",
+            "CombMoments(Wavelet())",
+            "CombMoments(Wavelet(Fourier_2D()))",
+            "CombMoments(Wavelet(Fourier_1D_ColumnWise()))",
+            "CombMoments(Wavelet(Fourier_1D_RowWise()))",
+            "EdgeFeatures()",
+            "OtsuObjectFeatures()",
+            "InverseOtsuObjectFeatures()",
+            "GaborTextures()",
+            "HaralickTextures()",
+            "HaralickTextures(Chebyshev())",
+            "HaralickTextures(Chebyshev(Fourier_2D()))",
+            "HaralickTextures(Chebyshev(Fourier_1D_ColumnWise()))",
+            "HaralickTextures(Chebyshev(Fourier_1D_RowWise()))",
+            "HaralickTextures(Fourier_2D())",
+            "HaralickTextures(Fourier_1D_ColumnWise())",
+            "HaralickTextures(Fourier_1D_RowWise())",
+            "HaralickTextures(Wavelet())",
+            "HaralickTextures(Wavelet(Fourier_2D()))",
+            "HaralickTextures(Wavelet(Fourier_1D_ColumnWise()))",
+            "HaralickTextures(Wavelet(Fourier_1D_RowWise()))",
+            "MultiscaleHistograms()",
+            "MultiscaleHistograms(Chebyshev())",
+            "MultiscaleHistograms(Chebyshev(Fourier_2D()))",
+            "MultiscaleHistograms(Chebyshev(Fourier_1D_ColumnWise()))",
+            "MultiscaleHistograms(Chebyshev(Fourier_1D_RowWise()))",
+            "MultiscaleHistograms(Fourier_2D())",
+            "MultiscaleHistograms(Fourier_1D_ColumnWise())",
+            "MultiscaleHistograms(Fourier_1D_RowWise())",
+            "MultiscaleHistograms(Wavelet())",
+            "MultiscaleHistograms(Wavelet(Fourier_2D()))",
+            "MultiscaleHistograms(Wavelet(Fourier_1D_ColumnWise()))",
+            "MultiscaleHistograms(Wavelet(Fourier_1D_RowWise()))",
+            "RadonCoefficients()",
+            "RadonCoefficients(Chebyshev())",
+            "RadonCoefficients(Chebyshev(Fourier_2D()))",
+            "RadonCoefficients(Chebyshev(Fourier_1D_ColumnWise()))",
+            "RadonCoefficients(Chebyshev(Fourier_1D_RowWise()))",
+            "RadonCoefficients(Fourier_2D())",
+            "RadonCoefficients(Fourier_1D_ColumnWise())",
+            "RadonCoefficients(Fourier_1D_RowWise())",
+            "TamuraTextures()",
+            "TamuraTextures(Chebyshev())",
+            "TamuraTextures(Chebyshev(Fourier_2D()))",
+            "TamuraTextures(Chebyshev(Fourier_1D_ColumnWise()))",
+            "TamuraTextures(Chebyshev(Fourier_1D_RowWise()))",
+            "TamuraTextures(Fourier_2D())",
+            "TamuraTextures(Fourier_1D_ColumnWise())",
+            "TamuraTextures(Fourier_1D_RowWise())",
+            "TamuraTextures(Wavelet())",
+            "TamuraTextures(Wavelet(Fourier_2D()))",
+            "TamuraTextures(Wavelet(Fourier_1D_ColumnWise()))",
+            "TamuraTextures(Wavelet(Fourier_1D_RowWise()))",
+            "ZernikeCoefficients()",
+            "ZernikeCoefficients(Fourier_2D())",
+            "ZernikeCoefficients(Fourier_1D_ColumnWise())",
+            "ZernikeCoefficients(Fourier_1D_RowWise())"
+            ,"Morphological()"
+        };
+        for (size_t i = 0; i < ( sizeof(the_fs) / sizeof(the_fs[0]) ); i++) {
+            the_plan->add(the_fs[i]);
+        }
+    } 
+    else {
+        const char* the_fs[] = {
+            "ChebyshevFourierCoefficients()",
+            "ChebyshevFourierCoefficients(Fourier())",
+            "ChebyshevCoefficients()",
+            "ChebyshevCoefficients(Fourier())",
+            "CombMoments()",
+            "CombMoments(Chebyshev())",
+            "CombMoments(Chebyshev(Fourier()))",
+            "CombMoments(Fourier())",
+            "CombMoments(Wavelet())",
+            "CombMoments(Wavelet(Fourier()))",
+            "EdgeFeatures()",
+            "OtsuObjectFeatures()",
+            "InverseOtsuObjectFeatures()",
+            "GaborTextures()",
+            "HaralickTextures()",
+            "HaralickTextures(Chebyshev())",
+            "HaralickTextures(Chebyshev(Fourier()))",
+            "HaralickTextures(Fourier())",
+            "HaralickTextures(Wavelet())",
+            "HaralickTextures(Wavelet(Fourier()))",
+            "MultiscaleHistograms()",
+            "MultiscaleHistograms(Chebyshev())",
+            "MultiscaleHistograms(Chebyshev(Fourier()))",
+            "MultiscaleHistograms(Fourier())",
+            "MultiscaleHistograms(Wavelet())",
+            "MultiscaleHistograms(Wavelet(Fourier()))",
+            "RadonCoefficients()",
+            "RadonCoefficients(Chebyshev())",
+            "RadonCoefficients(Chebyshev(Fourier()))",
+            "RadonCoefficients(Fourier())",
+            "TamuraTextures()",
+            "TamuraTextures(Chebyshev())",
+            "TamuraTextures(Chebyshev(Fourier()))",
+            "TamuraTextures(Fourier())",
+            "TamuraTextures(Wavelet())",
+            "TamuraTextures(Wavelet(Fourier()))",
+            "ZernikeCoefficients()",
+            "ZernikeCoefficients(Fourier())"
+            ,"Morphological()"
+        };
+        for (size_t i = 0; i < ( sizeof(the_fs) / sizeof(the_fs[0]) ); i++) {
+            the_plan->add(the_fs[i]);
+        }
+    }
+}
+
 
 

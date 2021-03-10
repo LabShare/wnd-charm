@@ -69,7 +69,8 @@ void radon(double *pPtr, double *iPtr, double *thetaPtr, int M, int N,
       for (m = 0; m < 2*M; m++)
       {
 	pixel = *pixelPtr;
-	if (pixel)
+	//MM if (pixel)
+	if (pixel && !std::isnan(pixel))
         {
 	  pixel *= 0.25;                         /* 1 flop/pixel */
 	  rIdx = (xCosTable[n] + ySinTable[m]);  /* 1 flop/pixel */

@@ -274,6 +274,8 @@ class FeatureComputationPlan : public ComputationPlan {
 		size_t n_features;
 		int feature_vec_type;              // stores the integer value of the feature_vec_types enum.
 
+        bool NaNFlag=false;
+
 		virtual void add (const std::string &FGname);
 		void add (const FeatureGroup *fg);
 
@@ -291,6 +293,14 @@ class FeatureComputationPlan : public ComputationPlan {
 			n_features = 0;
 			feature_vec_type = 0;
 		}
+		
+		//MM
+		FeatureComputationPlan (const std::string &name_in, bool flag) : ComputationPlan (name_in) {
+            n_features = 0;
+            feature_vec_type = 0;
+            if (flag) NaNFlag=true;
+        }
+		
 		// parent destructor takes care of CalculationTask objects
 		// This plan doesn't own any of the objects it has references to
 		virtual ~FeatureComputationPlan() {}
@@ -364,9 +374,11 @@ class StdFeatureComputationPlans {
 			fv_long_color = 4
 		};
 		static const int feature_vector_major_version = CURRENT_FEATURE_VERSION;
-		static const FeatureComputationPlan *getFeatureSet();
+		//MM static const FeatureComputationPlan *getFeatureSet();
+		static const FeatureComputationPlan *getFeatureSet(bool flag);
 		static const FeatureComputationPlan *getFeatureSetColor();
-		static const FeatureComputationPlan *getFeatureSetLong();
+		//MM static const FeatureComputationPlan *getFeatureSetLong();
+		static const FeatureComputationPlan *getFeatureSetLong(bool flag);
 		static const FeatureComputationPlan *getFeatureSetLongColor();
 		static void addLongFeatures (FeatureComputationPlan *the_plan, bool color);
 		static void addGroupAFeatures (FeatureComputationPlan *the_plan, std::string transform);
@@ -374,6 +386,7 @@ class StdFeatureComputationPlans {
 		static void addGroupCFeatures (FeatureComputationPlan *the_plan, std::string transform);
 		static void addColorFeatures (FeatureComputationPlan *the_plan);
 		static void addStdFeatures (FeatureComputationPlan *the_plan);
+		static const FeatureComputationPlan *getFeatureSetbyName(char * ImageTransformationName, char * FeatureAlgorithmName); //MM
 };
 
 #endif //__TASKS_H_

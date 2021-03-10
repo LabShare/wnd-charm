@@ -131,7 +131,8 @@ void WORMfile::finish (bool reopen) {
 		//   e.g., file created by different owner, then failed before calling finish().
 		// Because we can succeed finishing the file, but fail to change permissions, we can't use the write permission as a check
 		// for stale files.
-		fchmod (_fd, _read_mode);
+                //MM fchmod (_fd, _read_mode);
+                fchmod (_fd, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH); //MM
 	}
 
 	if (_fp) fclose(_fp);

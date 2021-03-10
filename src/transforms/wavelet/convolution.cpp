@@ -29,6 +29,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
  * ZERO PADDING
  */
  
+#include <limits> //MM
  
 #include "convolution.h"
 //#include <iostream>
@@ -193,13 +194,21 @@ int downsampling_convolution(const DTYPE* input, const int N, const double* filt
 				}
 				break;
 				
-			case MODE_ZEROPAD:
+			case MODE_ZEROPAD: //MM: TODO: Remove nan values from the other cases
 			default:
 				for(i=start; i < F; i+=step){
 					sum = 0;
+					int flag=0; //MM
 					for(j = 0; j <= i; ++j)
-						sum += filter[j]*input[i-j];
-					*(ptr_w++) = sum;
+						//MM sum += filter[j]*input[i-j];
+                    //MM *(ptr_w++) = sum;
+                    //MM:
+                    {
+                        if(std::isnan(filter[j]*input[i-j])) {flag=1; continue;}
+                        sum += filter[j]*input[i-j];
+                    }						
+                    if(flag==1 && sum==0) { *(ptr_w++) = std::numeric_limits<double>::quiet_NaN();}
+                    else *(ptr_w++) = sum;                   
 				}  
 				
 				break;
@@ -209,9 +218,18 @@ int downsampling_convolution(const DTYPE* input, const int N, const double* filt
         // F - N-1		- filter in input range
         for(; i < N; i+=step){					// input elements
             sum = 0;
+            int flag=0; //MM
             for(j = 0; j < F; ++j)				
+               //MM sum += input[i-j]*filter[j];
+            //MM*(ptr_w++) = sum;
+            //MM:
+            {
+                if(std::isnan(input[i-j]*filter[j])) {flag=1; continue;}
                 sum += input[i-j]*filter[j];
-            *(ptr_w++) = sum;
+            }
+
+            if(flag==1 && sum==0) { *(ptr_w++) = std::numeric_limits<double>::quiet_NaN();}
+            else *(ptr_w++) = sum;                       
         }  
 
 		///////////////////////////////////////////////////////////////////////
@@ -310,9 +328,18 @@ int downsampling_convolution(const DTYPE* input, const int N, const double* filt
 			default:
 				for(; i < N+F-1; i += step){
 					sum = 0;
+					int flag=0; //MM
 					for(j = i-(N-1); j < F; ++j)
-						sum += input[i-j]*filter[j];
-					*(ptr_w++) = sum;
+						//MM sum += input[i-j]*filter[j];
+					//MM *(ptr_w++) = sum;
+					   {
+                           if(std::isnan(input[i-j]*filter[j])) {flag=1; continue;}
+                           sum += input[i-j]*filter[j];
+                       }
+                       //Mahdi *(ptr_w++) = sum;
+
+                       if(flag==1 && sum==0) { *(ptr_w++) = std::numeric_limits<double>::quiet_NaN();}
+                       else *(ptr_w++) = sum;
 				}  
 				break;
 		}		
@@ -573,10 +600,10 @@ int upsampling_convolution_valid_sf(const DTYPE* input, const int N, const doubl
 			
 				if(k <= N){
 					memcpy(periodization_buf + N_p - k, input, k * sizeof(double));		// copy from beginning of input to end of buffer
-					for(i = 1; i <= (N_p - k); ++i)										// kopiowanie 'cykliczne' od koñca input 
+					for(i = 1; i <= (N_p - k); ++i)										// kopiowanie 'cykliczne' od ko\F1ca input 
 						periodization_buf[(N_p - k) - i] = input[N - (i%N)];
 					memcpy(periodization_buf_rear, input + N - k, k * sizeof(double));	// copy from end of input to begginning of buffer
-					for(i = 0; i < (N_p - k); ++i)										// kopiowanie 'cykliczne' od pocz¹tku input
+					for(i = 0; i < (N_p - k); ++i)										// kopiowanie 'cykliczne' od pocz\B9tku input
 						periodization_buf_rear[k + i] = input[i%N];
 				} else {
 					//printf("see %d line in %s!!\n", __LINE__, __FILE__);

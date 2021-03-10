@@ -97,6 +97,26 @@ signatures *signatures::duplicate() {
 	return(new_samp);
 }
 
+//MM:
+signatures *signatures::duplicate2() {
+    signatures *new_samp;
+    new_samp=new signatures();
+    new_samp->sample_class=sample_class;
+    new_samp->sample_value=sample_value;
+    new_samp->interpolated_value=interpolated_value;
+    new_samp->count=count;
+    new_samp->NamesTrainingSet=NamesTrainingSet;
+    new_samp->ScoresTrainingSet=ScoresTrainingSet;
+    strcpy(new_samp->full_path,full_path);
+
+    new_samp->Resize (count);
+    new_samp->data = data;
+    //wf = NULL;
+    new_samp->version = version;
+    new_samp->feature_vec_type = feature_vec_type;
+    return(new_samp);
+}
+
 /* Resize
    Allocate memory for specified number of signatures
    nsigs -size_t - number of signatures to preallocate
@@ -226,7 +246,8 @@ void signatures::FileClose()
 	}
 }
 
-int signatures::SaveToFile (int save_feature_names) {
+//MM int signatures::SaveToFile (int save_feature_names) {
+int signatures::SaveToFile (int save_feature_names, int Count, int i, bool ROIFlag, std::string MaskFilename) {
 	int sig_index;
 	char buffer[IMAGE_PATH_LENGTH+SAMPLE_NAME_LENGTH+1];
 
@@ -244,12 +265,15 @@ int signatures::SaveToFile (int save_feature_names) {
 		return(0);
 	}
 	FILE *wf_fp = wf->fp();
-
+	
+/* MM
+    if (i) fprintf(wf_fp,"\n--------------- ROI for the label number %d -------------\n",i); //MM
+   
 	if ( NamesTrainingSet && ((TrainingSet *)(NamesTrainingSet))->is_continuous ) {
 		fprintf(wf_fp,"%f\t%d.%d\n",sample_value,version,feature_vec_type);  /* save the continouos value */
-	} else {
+/*	} else {
 		fprintf(wf_fp,"%d\t%d.%d\n",sample_class,version,feature_vec_type);  /* save the class index */
-	}
+/*	}
 	fprintf(wf_fp,"%s\n",full_path);
 	for (sig_index=0; sig_index < count; sig_index++) {
 		if( save_feature_names && NamesTrainingSet )
@@ -257,6 +281,30 @@ int signatures::SaveToFile (int save_feature_names) {
 		else
 			fprintf( wf_fp, "%.8g\n", data[sig_index] );
 	}
+*/
+
+//MM: Writing Outputs in Columns
+//    static int ROIcounts=0;
+//    ++ROIcounts;
+
+//    if (ROIcounts==1){
+    if (Count==1){
+        //MM if (ROIFlag) fprintf( wf_fp, "%s,", "ROIRegion" );
+        if (ROIFlag) fprintf( wf_fp, "%s,%s,", "ROIRegion", "MaskFilename");
+        for (sig_index=0; sig_index < count; sig_index++) {
+            if (sig_index == count -1) fprintf( wf_fp, "%s\n", ((TrainingSet *)NamesTrainingSet)->SignatureNames[sig_index] );
+            else fprintf( wf_fp, "%s,", ((TrainingSet *)NamesTrainingSet)->SignatureNames[sig_index] );
+        }
+    }
+
+    //MM if (ROIFlag) fprintf( wf_fp, "%d,", i);
+    if (ROIFlag) fprintf( wf_fp, "%d,%s,", i, MaskFilename.c_str());
+    for (sig_index=0; sig_index < count; sig_index++) {
+        if (sig_index == count -1) fprintf( wf_fp, "%.8g\n", data[sig_index] );
+        else fprintf( wf_fp, "%.8g,", data[sig_index] );
+    }
+
+	
    return(1);
 }
 
@@ -279,11 +327,18 @@ int signatures::LoadFromFile(char *filename) {
 	return (ret);
 }
 
-void signatures::LoadFromFilep (FILE *value_file) {
+//MM void signatures::LoadFromFilep (FILE *value_file) {
+    void signatures::LoadFromFilep (FILE *value_file, char * ROIPath ) {
 	char buffer[IMAGE_PATH_LENGTH+SAMPLE_NAME_LENGTH+1],*p_buffer, name[SIGNATURE_NAME_LENGTH];
 	int version_maj = 0, version_min = 0;
 	double val;
 
+    //MM
+    if (strcmp(ROIPath,"")){
+        fgets(buffer,sizeof(buffer),value_file);
+        fgets(buffer,sizeof(buffer),value_file);
+    }
+    
 	/* read the class or value and version */
 	fgets(buffer,sizeof(buffer),value_file);
 	if (NamesTrainingSet && ((TrainingSet *)(NamesTrainingSet))->is_continuous) {
@@ -330,7 +385,8 @@ void signatures::LoadFromFilep (FILE *value_file) {
   If the file exists, and is not locked, the sigs will be loaded from it, and no lock will be issued. (return 1, (wf.status = WORMfile::WORM_FINISHED))
   If an error occurs in obtaining the lock (if necessary) or creating the file (if necessary) or reading it (if possible), return -1.
 */
-int signatures::ReadFromFile (bool wait) {
+//MM int signatures::ReadFromFile (bool wait) {
+int signatures::ReadFromFile (bool wait, char * ROIPath) {
 	char buffer[IMAGE_PATH_LENGTH+SAMPLE_NAME_LENGTH+1];
 
 	if (!wf) wf = new WORMfile (GetFileName (buffer), wait, wait);
@@ -343,7 +399,8 @@ int signatures::ReadFromFile (bool wait) {
 		return (0);
 	} else if (wf->status == WORMfile::WORM_RD) {
 		Clear(); // reset sample count
-		LoadFromFilep (wf->fp());
+		//MM LoadFromFilep (wf->fp());
+		LoadFromFilep (wf->fp(), ROIPath);
 		wf->finish(); // this unlocks, closes, etc.
 		// Of course, if it was empty afterall, its an error.
 		if (count < 1) {
@@ -355,6 +412,19 @@ int signatures::ReadFromFile (bool wait) {
 	// I/O error
 		return (-1);
 	}
+}
+
+//MM:
+int signatures::ReadFromFile2 (bool wait, char* OutputPath) {
+    char buffer[IMAGE_PATH_LENGTH+SAMPLE_NAME_LENGTH+1];
+
+    if (!wf) wf = new WORMfile (GetFileName2 (buffer, OutputPath), wait, wait);
+    else wf->reopen(wait, wait);
+
+    if (!wf) return (-1);
+    if (wf->status == WORMfile::WORM_WR) {
+        return (0);
+    }
 }
 
 /*
@@ -377,6 +447,30 @@ char *signatures::GetFileName (char *buffer) {
 
 	sprintf(char_p,"%s.sig",sample_name);
 	return (buffer);
+}
+
+//MM:
+char *signatures::GetFileName2 (char *buffer, char* OutputPath) {
+    char *char_p, *char_p2;
+
+    if (wf) {
+        strcpy (buffer, wf->path.c_str());
+        return buffer;
+    }
+
+    char_p = strrchr(full_path,'/')+1;
+    std::string tmp;
+    tmp=OutputPath;
+    tmp +="/";
+    tmp+= char_p;
+
+    strcpy(buffer,tmp.c_str());
+    char_p = strrchr(buffer,'.');
+    if (!char_p)
+        char_p=buffer+strlen(buffer);
+
+    sprintf(char_p,"%s.sig",sample_name);
+    return (buffer);
 }
 
 

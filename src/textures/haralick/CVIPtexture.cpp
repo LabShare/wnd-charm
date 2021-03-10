@@ -991,6 +991,9 @@ void _Q_calc_eigen(const ArrayXXd_rowmajor & P, const int Ng,
 /* Uncomment VALIDATE_NEW_f14_maxcorr to compare against the last implementation.
 #define VALIDATE_NEW_f14_maxcorr */
 double f14_maxcorr (double **P, int Ng) {
+
+        if (Ng < 3) return std::numeric_limits<double>::quiet_NaN(); //MM
+
 #ifdef VALIDATE_NEW_f14_maxcorr
     int k;
 	double *px, *py, **Q_old;

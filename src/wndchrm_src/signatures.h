@@ -87,6 +87,7 @@ class signatures
     signatures();                       // constructor
     ~signatures();                      // destructor
     signatures *duplicate();            // create an identical signature vector object */
+    signatures *duplicate2(); //MM
     void Resize(size_t nsigs);          // call before adding sigs
     void Add(const char *name, double value);
 	void SetFeatureVectorType();
@@ -94,12 +95,23 @@ class signatures
     void compute_plan (const ImageMatrix &matrix, const FeatureComputationPlan *plan);
     void normalize(void *TrainSet);                /* normalize the signatures based on the values of the training set */
     void FileClose();
-    int SaveToFile(int save_feature_names);
+    
+    //MM int SaveToFile(int save_feature_names);
+    int SaveToFile(int save_feature_names, int Count, int i=0, bool ROIFlag=true, std::string MaskFilename="");
+        
     int LoadFromFile(char *filename);
-    void LoadFromFilep (FILE *value_file); // implementation for LoadFromFile using a pre-existing FILE*
-	int ReadFromFile (bool wait); // load if exists, or lock and set fpp.
+    //MM void LoadFromFilep (FILE *value_file); // implementation for LoadFromFile using a pre-existing FILE*
+	void LoadFromFilep (FILE *value_file, char * ROIPath=""); // implementation for LoadFromFile using a pre-existing FILE*
+	//MM int ReadFromFile (bool wait); // load if exists, or lock and set fpp.
+	int ReadFromFile (bool wait, char * ROIPath=""); // load if exists, or lock and set fpp.
+	int ReadFromFile2 (bool wait, char * OutputPath="");     //MM	    
 	char *GetFileName(char *buffer);
+	char *GetFileName2(char *buffer,char* OutputPath); //MM
+	    
 	int CompareToFile (const ImageMatrix &matrix, char *filename, int compute_colors, int large_set);
+	
+	int ROIcounts; //MM
+	
 };
 
 #endif

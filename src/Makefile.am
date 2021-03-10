@@ -11,6 +11,8 @@ libchrm_a_SOURCES = \
   FeatureAlgorithms.h \
   FeatureNames.cpp \
   FeatureNames.h \
+  MorphologicalAlgorithms.cpp \
+  MorphologicalAlgorithms.h \  
   ImageTransforms.cpp \
   ImageTransforms.h \
   OldFeatureNamesFileStr.h \

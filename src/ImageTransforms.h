@@ -64,6 +64,25 @@ class FourierTransform : public ImageTransform {
 		virtual void execute (const ImageMatrix &matrix_IN, ImageMatrix &matrix_OUT ) const;
 };
 
+//MM
+class FourierTransform2D : public ImageTransform {
+    public:
+        FourierTransform2D();
+        virtual void execute (const ImageMatrix &matrix_IN, ImageMatrix &matrix_OUT ) const;
+};
+//MM
+class FourierTransform1DColumnWise : public ImageTransform {
+    public:
+        FourierTransform1DColumnWise();
+        virtual void execute (const ImageMatrix &matrix_IN, ImageMatrix &matrix_OUT ) const;
+};
+//MM
+class FourierTransform1DRowWise : public ImageTransform {
+    public:
+        FourierTransform1DRowWise();
+        virtual void execute (const ImageMatrix &matrix_IN, ImageMatrix &matrix_OUT ) const;
+};
+
 class ChebyshevTransform: public ImageTransform {
 	public:
 		ChebyshevTransform();

@@ -114,7 +114,8 @@ am__v_AR_1 =
 libchrm_a_AR = $(AR) $(ARFLAGS)
 libchrm_a_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
-am_libchrm_a_OBJECTS = libchrm_a-FeatureAlgorithms.$(OBJEXT) \
+am_libchrm_a_OBJECTS = libchrm_a-MorphologicalAlgorithms.$(OBJEXT) \
+	libchrm_a-FeatureAlgorithms.$(OBJEXT) \
 	libchrm_a-FeatureNames.$(OBJEXT) \
 	libchrm_a-ImageTransforms.$(OBJEXT) libchrm_a-Tasks.$(OBJEXT) \
 	libchrm_a-cmatrix.$(OBJEXT) \
@@ -664,6 +665,8 @@ AM_CPPFLAGS = -fPIC
 noinst_LIBRARIES = libchrm.a
 libchrm_a_SOURCES = \
   unordered_map_dfn.h \
+  MorphologicalAlgorithms.cpp \
+  MorphologicalAlgorithms.h \
   FeatureAlgorithms.cpp \
   FeatureAlgorithms.h \
   FeatureNames.cpp \
@@ -980,6 +983,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libchrm_a-MorphologicalAlgorithms.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libchrm_a-FeatureAlgorithms.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libchrm_a-FeatureNames.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libchrm_a-ImageTransforms.Po@am__quote@
@@ -1038,6 +1042,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
+
+libchrm_a-MorphologicalAlgorithms.o: MorphologicalAlgorithms.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libchrm_a_CXXFLAGS) $(CXXFLAGS) -MT libchrm_a-MorphologicalAlgorithms.o -MD -MP -MF $(DEPDIR)/libchrm_a-MorphologicalAlgorithms.Tpo -c -o libchrm_a-MorphologicalAlgorithms.o `test -f 'MorphologicalAlgorithms.cpp' || echo '$(srcdir)/'`MorphologicalAlgorithms.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libchrm_a-MorphologicalAlgorithms.Tpo $(DEPDIR)/libchrm_a-MorphologicalAlgorithms.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='MorphologicalAlgorithms.cpp' object='libchrm_a-MorphologicalAlgorithms.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libchrm_a_CXXFLAGS) $(CXXFLAGS) -c -o libchrm_a-MorphologicalAlgorithms.o `test -f 'MorphologicalAlgorithms.cpp' || echo '$(srcdir)/'`MorphologicalAlgorithms.cpp
+
+libchrm_a-MorphologicalAlgorithms.obj: MorphologicalAlgorithms.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libchrm_a_CXXFLAGS) $(CXXFLAGS) -MT libchrm_a-MorphologicalAlgorithms.obj -MD -MP -MF $(DEPDIR)/libchrm_a-MorphologicalAlgorithms.Tpo -c -o libchrm_a-MorphologicalAlgorithms.obj `if test -f 'MorphologicalAlgorithms.cpp'; then $(CYGPATH_W) 'MorphologicalAlgorithms.cpp'; else $(CYGPATH_W) '$(srcdir)/MorphologicalAlgorithms.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libchrm_a-MorphologicalAlgorithms.Tpo $(DEPDIR)/libchrm_a-MorphologicalAlgorithms.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='MorphologicalAlgorithms.cpp' object='libchrm_a-MorphologicalAlgorithms.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libchrm_a_CXXFLAGS) $(CXXFLAGS) -c -o libchrm_a-MorphologicalAlgorithms.obj `if test -f 'MorphologicalAlgorithms.cpp'; then $(CYGPATH_W) 'MorphologicalAlgorithms.cpp'; else $(CYGPATH_W) '$(srcdir)/MorphologicalAlgorithms.cpp'; fi`
 
 libchrm_a-FeatureAlgorithms.o: FeatureAlgorithms.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libchrm_a_CXXFLAGS) $(CXXFLAGS) -MT libchrm_a-FeatureAlgorithms.o -MD -MP -MF $(DEPDIR)/libchrm_a-FeatureAlgorithms.Tpo -c -o libchrm_a-FeatureAlgorithms.o `test -f 'FeatureAlgorithms.cpp' || echo '$(srcdir)/'`FeatureAlgorithms.cpp
