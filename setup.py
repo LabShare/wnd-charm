@@ -103,7 +103,9 @@ wndchrm_module = Extension('_wndcharm',
 		'src/gsl/specfunc.cpp',
 	],
 	include_dirs=['./','src/', '/usr/local/include'],
-	swig_opts=['-threads', '-c++', '-I./', '-I./src', '-outdir', 'wndcharm'],
+	swig_opts=['-threads', '-c++', '-I./','-I./src', '-outdir', 'wndcharm'],
+	extra_compile_args=['-fopenmp'],
+	extra_link_args=['-lgomp'],	
 	libraries=['tiff','fftw3'],
 )
 

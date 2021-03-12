@@ -49,8 +49,8 @@ Installation of WND-CHARM minimally requires a C++ compiler, LibTIFF and FFTW.
 * Optional for dendrograms: [PHYLIP](http://evolution.genetics.washington.edu/phylip/install.html)
     * Some X11 libraries must be installed prior to compiling/installing PHYLIP (`make install` in the src dir.)
         * CentOS/RedHat: `sudo yum install libX11-devel libXt-devel libXaw-devel`
-        * Ubuntu/Debian: `sudo apt-get install libX11-dev libxt-dev libxaw7-dev`
-
+        * Ubuntu/Debian: `sudo apt-get install libX11-dev libxt-dev libxaw7-dev` 
+      
 #### WND-CHARM Python API additional dependencies
 The WND-CHARM Python API additionally requires the Python development package, SWIG, and the common Python 3rd-party packages `numpy` and `scipy`. Optionally, result visualization tools are enabled by installing the package `matplotlib`. To run the provided example scripts, the package `argparse` is required (included with Python 2.7+).
 
@@ -70,3 +70,25 @@ The WND-CHARM Python API additionally requires the Python development package, S
 ## Test Images
 
 Please also visit the [IICBU Biological Image Repository](https://ome.irp.nia.nih.gov/iicbu2008), which provides a benchmark for testing and comparing the performance of image analysis algorithms for biological imaging.
+
+## What is new?
+
+The performance of WND-CHARM was profiled and improved using the following techniques.
+
+* Multi-threading capability (OpenMP directives) was added for the performance bottlenecks which were in the following codes. 
+    * /src/statistics/FeatureStatistics.cpp
+    * /src/textures/gabor.cpp
+    * /src/transforms/chebyshev.cpp
+* Optimization technique of Data Locality was implememted in the following code. 
+    * /src/statistics/CombFirst4Moments.cpp 
+    
+The number of threads can be set using `export OMP_NUM_THREADS=10`. Overall, the performance of WND-CHARM was improved by 45% using the new changes and by running with 10 threads.
+
+In addition to the above changes, unit tests for the current implementations in WND-CHARM were tested and successfully passed. More importantly, the unit tests for the original WND-CHARM were reviewed and fixed by modifying the reference values for Haralick Textures (components 16 and 17) in the following files. The unit tests are now operational for the original WND-CHARM as well as the current implementations.
+
+/tests/pywndcharm_tests/lymphoma_eosin_channel_MCL_test_img_sj-05-3362-R2_001_E-t6x5_5_4-l.sig
+/tests/pywndcharm_tests/lymphoma_eosin_channel_MCL_test_img_sj-05-3362-R2_001_E_t6x5_REFERENCE_SIGFILES.zip
+/tests/wndchrm_tests/010067_301x300-l_precalculated.sig
+
+
+       

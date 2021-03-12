@@ -33,7 +33,7 @@
 
 #include "cmatrix.h"
 #include "chebyshev.h"
-
+#include <omp.h>
 //---------------------------------------------------------------------------
 
 void TNx(double *x, double *out, int N, int height) {
@@ -78,27 +78,26 @@ void TNx(double *x, double *out, int N, int height) {
 }
 
 void getChCoeff1D(double *f,double *out,double *Tj,int N,int width) {
-	double *tj;
-	int jj,a;
+	double Inversewidth=1.0/(double)width;   
 
-	tj = new double[width];
-	for (jj = 0; jj < N; jj++) {
-		int jx;
-		jx = jj;
-		for (a = 0; a < width; a++)
-			tj[a] = Tj[a*N+jj];
-		if (!jx) {
-			for (a = 0; a < width; a++)
-				tj[a] = tj[a]/(double)width;
-		} else {
-			for (a = 0; a < width; a++)
-			tj[a] = tj[a]*2/(double)width;
+    #pragma omp parallel for schedule(dynamic) 	
+	for (int jj = 0; jj < N; jj++) {
+		double *tj = new double[width];		
+		for (int a = 0; a < width; a++) tj[a] = Tj[a*N+jj];
+
+		if (!jj) {
+			for (int a = 0; a < width; a++) tj[a] = tj[a]*Inversewidth;
+		} 
+		else {
+                        for (int a = 0; a < width; a++) tj[a] =tj[a]* 2/(double)width;
+                        //It is better to have "tj[a] *= 2*Inversewidth;" here, however, this caused an error in unit testing of test_parallel_compute.py
 		}
+
 		out[jj] = 0;
-		for (a = 0; a < width; a++)
-			out[jj] += f[a]*tj[a]/2;
-	}
-	delete [] tj;
+		for (int a = 0; a < width; a++) out[jj] += f[a]*tj[a]*0.5;
+
+		delete [] tj;
+	}	
 }
 
 void getChCoeff(double *Im, double *out, double *Tj,int N,int width, int height) {
